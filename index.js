@@ -1,8 +1,18 @@
 const express = require('express')
 const puppeteer = require("puppeteer")
-
+const cors = require('cors')
 const app = express()
 app.use(express.json())
+const corsConfig = {
+    origin: [
+      "http://localhost:4000",
+      "https://lms.recqarz.com",
+      "https://lms.uat.recqarz.com",
+      "https://lms.test.recqarz.com",
+    ],
+    credentials: true,
+  };
+  app.use(cors(corsConfig));
 app.get("/api1", async(req,res)=>{
     res.status(200).json({
         msg:"Shree Ganesh"
@@ -35,5 +45,5 @@ app.post('/api1/view',async(req,res)=>{
   
 })
 app.listen(4001,()=>{
-    console.log('App is running on port 8000')
+    console.log('App is running on port 4001')
 })
