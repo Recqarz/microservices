@@ -1,0 +1,7 @@
+node_modules/
+logs/
+PemFile.pem
+uploads/queries/
+.env
+.DS_Store
+access.log
