@@ -3,13 +3,13 @@ const puppeteer = require("puppeteer")
 
 const app = express()
 app.use(express.json())
-app.get("/", async(req,res)=>{
+app.get("/api1", async(req,res)=>{
     res.status(200).json({
         msg:"Shree Ganesh"
     })
 })
 
-app.post('/view',async(req,res)=>{
+app.post('/api1/view',async(req,res)=>{
     const {htmlTemplate}  = req.body;
     let executablePath;
   
@@ -34,6 +34,6 @@ app.post('/view',async(req,res)=>{
     res.send(pdfBuffer);
   
 })
-app.listen(8000,()=>{
+app.listen(4001,()=>{
     console.log('App is running on port 8000')
 })
