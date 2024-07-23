@@ -115,7 +115,7 @@ app.post('/api1/view',async(req,res)=>{
         res.send(pdfBuffer);
     }catch(err){
         return res.status(500).json({
-            msg:"Shree Ganesh"
+            msg:err
         })
 
     }
