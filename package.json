@@ -2,6 +2,7 @@
   "name": "microservice",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,6 +13,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "node-cron": "^3.0.3",
+    "p-queue": "^8.0.1",
     "puppeteer": "^22.13.1"
   }
 }
