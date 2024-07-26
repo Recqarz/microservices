@@ -20,6 +20,7 @@ const corsConfig = {
 app.use(cors(corsConfig));
 
 const queue = new PQueue({ concurrency: 10 }); // Limit to 5 concurrent Puppeteer instances
+const queue1 = new PQueue({ concurrency:35 }); // Limit to 5 concurrent Puppeteer instances
 
 app.get("/api1", async (req, res) => {
   res.status(200).json({
@@ -60,6 +61,60 @@ app.post('/api1/view', (req, res) => {
       res.status(500).json({
         msg: err.message
       });
+    }
+  });
+});
+
+let pageGlobal = null;
+
+async function getBrowser() {
+  if (pageGlobal) {
+    return pageGlobal;
+  }
+
+  let executablePath;
+  if (process.platform === "win32") {
+    executablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+  } else if (process.platform === "linux") {
+    executablePath = "/usr/bin/google-chrome";
+  } else {
+    throw new Error("Unsupported operating system");
+  }
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+  
+  pageGlobal = browser;
+  return browser;
+}
+
+async function generatePDF(htmlTemplate) {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+
+  try {
+    await page.setContent(htmlTemplate);
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+    return pdfBuffer;
+  } finally {
+    await page.close();
+  }
+}
+
+app.post('/api1/test/view', (req, res) => {
+  queue1.add(async () => {
+    try {
+      const { htmlTemplate } = req.body;
+      const pdfBuffer = await generatePDF(htmlTemplate);
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.send(pdfBuffer);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      res.status(500).json({ msg: err.message });
     }
   });
 });
