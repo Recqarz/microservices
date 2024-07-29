@@ -119,7 +119,16 @@ app.post('/api1/test/view', (req, res) => {
   });
 });
 
+app.get('/api1/kill', async (req, res) => {
 
+  try {
+      killOrphanedChrome()
+      res.sendStatus(200)
+  } catch (err) {
+    console.error('Error generating PDF:', err);
+    res.status(500).json({ msg: err.message });
+  }
+})
 // app.post('/api1/cron', (req, res) => {
 //     queue.add(async () => {
 //       try {
