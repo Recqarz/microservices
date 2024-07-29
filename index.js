@@ -92,15 +92,16 @@ async function getBrowser() {
 }
 
 async function generatePDF(htmlTemplate) {
-  const browser = await getBrowser();
-  const page = await browser.newPage();
-
+  let page;
+  
   try {
+    const browser = await getBrowser();
+    page = await browser.newPage();
     await page.setContent(htmlTemplate);
     const pdfBuffer = await page.pdf({ format: 'A4' });
     return pdfBuffer;
   } finally {
-    await page.close();
+    await page?.close();
   }
 }
 
@@ -170,12 +171,14 @@ const killOrphanedChrome = () => {
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error killing Chrome processes: ${error.message}`);
+      pageGlobal=null
       return;
     }
     if (stderr) {
       console.error(`stderr: ${stderr}`);
       return;
     }
+    pageGlobal=null
     console.log(`stdout: ${stdout}`);
   });
 };
