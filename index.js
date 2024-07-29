@@ -92,16 +92,16 @@ async function getBrowser() {
 }
 
 async function generatePDF(htmlTemplate) {
-  let page;
+  
+  const browser = await getBrowser();
+  const page = await browser.newPage();
   
   try {
-    const browser = await getBrowser();
-    page = await browser.newPage();
     await page.setContent(htmlTemplate);
     const pdfBuffer = await page.pdf({ format: 'A4' });
     return pdfBuffer;
   } finally {
-    await page?.close();
+    await page.close();
   }
 }
 
