@@ -130,6 +130,16 @@ app.get('/api1/kill', async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 })
+app.get('/api1/q', async (req, res) => {
+
+  try {
+      queue.clear();
+      res.status(200).json({ msg: 'Queue is cleared' });
+  } catch (err) {
+    console.error('Error generating PDF:', err);
+    res.status(500).json({ msg: err.message });
+  }
+})
 // app.post('/api1/cron', (req, res) => {
 //     queue.add(async () => {
 //       try {
