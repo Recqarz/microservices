@@ -1,8 +1,8 @@
 import express from 'express';
 import puppeteer from 'puppeteer';
 import cors from 'cors';
-import { exec } from 'child_process';
-import cron from 'node-cron';
+import PDFDocument from 'pdfkit';
+
 import PQueue from 'p-queue';
 
 const app = express();
@@ -20,7 +20,7 @@ const corsConfig = {
 app.use(cors(corsConfig));
 
 const queue = new PQueue({ concurrency: 10 }); // Limit to 5 concurrent Puppeteer instances
-const queue1 = new PQueue({ concurrency:35 }); // Limit to 5 concurrent Puppeteer instances
+const queue1 = new PQueue({ concurrency:30 }); // Limit to 5 concurrent Puppeteer instances
 
 app.get("/api1", async (req, res) => {
   res.status(200).json({
@@ -29,7 +29,6 @@ app.get("/api1", async (req, res) => {
 });
 
 app.post('/api1/view', (req, res) => {
-  console.log("hghkjl",queue)
   queue.add(async () => {
     try {
       const { htmlTemplate } = req.body;
@@ -106,6 +105,27 @@ async function generatePDF(htmlTemplate) {
 }
 
 app.post('/api1/test/view', (req, res) => {
+  console.log('adding to q',queue1.pending)
+  if (queue1.pending >30){
+    queue.clear()
+    const doc = new PDFDocument();
+
+  // Set the response header to indicate a PDF file
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline; filename="message.pdf"');
+
+  // Pipe the PDF document to the response
+  doc.pipe(res);
+
+  // Add content to the PDF
+  doc.fontSize(25).text('Please load again, Server is facing heavy load', {
+    align: 'center',
+  });
+
+  // Finalize the PDF and end the stream
+  doc.end();
+  return
+  }
   queue1.add(async () => {
     try {
       const { htmlTemplate } = req.body;
@@ -123,75 +143,53 @@ app.post('/api1/test/view', (req, res) => {
 app.get('/api1/kill', async (req, res) => {
 
   try {
-      killOrphanedChrome()
       res.sendStatus(200)
   } catch (err) {
     console.error('Error generating PDF:', err);
     res.status(500).json({ msg: err.message });
   }
 })
-app.get('/api1/q', async (req, res) => {
 
-  try {
-      queue.clear();
-      res.status(200).json({ msg: 'Queue is cleared' });
-  } catch (err) {
-    console.error('Error generating PDF:', err);
-    res.status(500).json({ msg: err.message });
+
+app.post('/api1/queue', (req, res) => {
+  console.log('adding to q',queue1.pending)
+  if (queue1.pending >30){
+    queue.clear()
+    const doc = new PDFDocument();
+
+  // Set the response header to indicate a PDF file
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline; filename="message.pdf"');
+
+  // Pipe the PDF document to the response
+  doc.pipe(res);
+
+  // Add content to the PDF
+  doc.fontSize(25).text('Please load again, Server is facing heavy load', {
+    align: 'center',
+  });
+
+  // Finalize the PDF and end the stream
+  doc.end();
+  return
   }
-})
-// app.post('/api1/cron', (req, res) => {
-//     queue.add(async () => {
-//       try {
+  queue1.add(async () => {
+    try {
+      const { htmlTemplate } = req.body;
+      const pdfBuffer = await generatePDF(htmlTemplate);
 
+      res.setHeader('Content-Type', 'application/pdf');
+      res.send(pdfBuffer);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      res.status(500).json({ msg: err.message });
+    }
+  });
+});
 
-//         var task = cron.schedule('* * * * *', () =>  {
-//             console.log('will execute every minute until stopped');
-//         });
-//         setTimeout(()=>{
-//             console.log('first')
-//             task.stop()
-//         },50000)
-//         res.sendStatus(200)
-//         // task.stop(); 
-
-//         // const {cron} = req.body.
-//         // // Schedule the task to run every 10 minutes
-//         // cron.schedule(cron, killOrphanedChrome);
-       
-//       } catch (err) {
-//         console.error('Error generating PDF:', err);
-//         res.status(500).json({
-//           msg: err.message
-//         });
-//       }
-//     });
-//   });
 
 const PORT = process.env.PORT || 4001;
 
 app.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
 });
-
-// Function to kill orphaned Chrome processes
-const killOrphanedChrome = () => {
-  console.log('Running scheduled task to kill orphaned Chrome processes...');
-  const command = process.platform === 'win32' ? 'taskkill /F /IM chrome.exe' : 'pkill -f chrome';
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error killing Chrome processes: ${error.message}`);
-      pageGlobal=null
-      return;
-    }
-    if (stderr) {
-      console.error(`stderr: ${stderr}`);
-      return;
-    }
-    pageGlobal=null
-    console.log(`stdout: ${stdout}`);
-  });
-};
-
-
-// cron.schedule('*/10 * * * *',killOrphanedChrome)
