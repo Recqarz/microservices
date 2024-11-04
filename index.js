@@ -20,7 +20,7 @@ const corsConfig = {
 app.use(cors(corsConfig));
 
 const queue = new PQueue({ concurrency: 10 }); // Limit to 5 concurrent Puppeteer instances
-const queue1 = new PQueue({ concurrency:90 }); // Limit to 5 concurrent Puppeteer instances
+const queue1 = new PQueue({ concurrency:20 }); // Limit to 5 concurrent Puppeteer instances
 
 app.get("/api1", async (req, res) => {
   res.status(200).json({
@@ -105,8 +105,8 @@ async function generatePDF(htmlTemplate) {
 }
 
 app.post('/api1/test/view', (req, res) => {
-  console.log('adding to q',queue1.pending,queue1.pending >90)
-  if (queue1.pending >90){
+  console.log('adding to q',queue1.pending,queue1.pending >20)
+  if (queue1.pending >20){
     console.log('clearing the q ',queue1.pending)
     queue1.clear()
     const doc = new PDFDocument();
@@ -153,8 +153,8 @@ app.get('/api1/kill', async (req, res) => {
 
 
 app.post('/api1/queue', (req, res) => {
-  console.log('adding to q',queue1.pending,queue1.pending >90)
-  if (queue1.pending >90){
+  console.log('adding to q',queue1.pending,queue1.pending >20)
+  if (queue1.pending >20){
     queue1.clear()
     console.log('clearing the q ',queue1.pending)
 
