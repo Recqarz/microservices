@@ -105,8 +105,9 @@ async function generatePDF(htmlTemplate) {
 }
 
 app.post('/api1/test/view', (req, res) => {
-  console.log('adding to q',queue1.pending)
+  console.log('adding to q',queue1.pending,queue1.pending >90)
   if (queue1.pending >90){
+    console.log('clearing the q ',queue1.pending)
     queue1.clear()
     const doc = new PDFDocument();
 
@@ -152,9 +153,11 @@ app.get('/api1/kill', async (req, res) => {
 
 
 app.post('/api1/queue', (req, res) => {
-  console.log('adding to q',queue1.pending)
+  console.log('adding to q',queue1.pending,queue1.pending >90)
   if (queue1.pending >90){
     queue1.clear()
+    console.log('clearing the q ',queue1.pending)
+
     const doc = new PDFDocument();
 
   // Set the response header to indicate a PDF file
