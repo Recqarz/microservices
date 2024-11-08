@@ -137,7 +137,7 @@ app.post('/api1/test/view', (req, res) => {
       res.setHeader('Content-Type', 'application/pdf');
       res.send(pdfBuffer);
     } catch (err) {
-      console.error('Error generating PDF:', err);
+      // console.error('Error generating PDF:', err);
       res.status(500).json({ msg: err.message });
     }
   });
@@ -148,7 +148,7 @@ app.get('/api1/kill', async (req, res) => {
   try {
       res.sendStatus(200)
   } catch (err) {
-    console.error('Error generating PDF:', err);
+    // console.error('Error generating PDF:', err);
     res.status(500).json({ msg: err.message });
   }
 })
@@ -187,7 +187,7 @@ app.post('/api1/queue', (req, res) => {
       res.setHeader('Content-Type', 'application/pdf');
       res.send(pdfBuffer);
     } catch (err) {
-      console.error('Error generating PDF:', err);
+      // console.error('Error generating PDF:', err);
       res.status(500).json({ msg: err.message });
     }
   });
