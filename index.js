@@ -57,7 +57,7 @@ app.post('/api1/view', (req, res) => {
       res.setHeader("Content-Type", "application/pdf");
       res.send(pdfBuffer);
     } catch (err) {
-      console.error('Error generating PDF:', err);
+      // console.error('Error generating PDF:', err);
       res.status(500).json({
         msg: err.message
       });
