@@ -4,6 +4,7 @@ import cors from 'cors';
 import PDFDocument from 'pdfkit';
 
 import PQueue from 'p-queue';
+import killChrome from './killChrome';
 
 const app = express();
 app.use(express.json());
@@ -107,6 +108,7 @@ async function generatePDF(htmlTemplate) {
 app.post('/api1/test/view', (req, res) => {
   console.log('adding to q',queue1.pending,queue1.pending >20)
   if (queue1.pending >19){
+    killChrome()
     console.log('clearing the q ',queue1.pending)
     queue1.clear()
     const doc = new PDFDocument();
@@ -155,6 +157,7 @@ app.get('/api1/kill', async (req, res) => {
 app.post('/api1/queue', (req, res) => {
   console.log('adding to q',queue1.pending,queue1.pending >20)
   if (queue1.pending >19){
+    killChrome()
     queue1.clear()
     console.log('clearing the q ',queue1.pending)
 
