@@ -1,21 +1,23 @@
 import { exec } from 'child_process';
+import util from 'util';
 
-function killChrome() {
-  const command = process.platform === 'win32' 
-    ? 'taskkill /F /IM chrome.exe' // Windows
-    : 'sudo pkill -f chrome';            // macOS/Linux
+const execPromise = util.promisify(exec);
 
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return;
-    }
+async function killChrome() {
+  const command = process.platform === 'win32'
+    ? 'taskkill /F /IM chrome.exe'
+    : 'sudo pkill -f chrome';  // Linux/macOS with sudo
+
+  try {
+    const { stdout, stderr } = await execPromise(command);
     if (stderr) {
       console.error(`stderr: ${stderr}`);
       return;
     }
     console.log(`stdout: ${stdout}`);
-  });
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
 }
 
 export default killChrome;
