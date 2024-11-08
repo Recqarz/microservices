@@ -4,7 +4,7 @@ import cors from 'cors';
 import PDFDocument from 'pdfkit';
 
 import PQueue from 'p-queue';
-import killChrome from './killChrome';
+import killChrome from './killChrome.js';
 
 const app = express();
 app.use(express.json());
